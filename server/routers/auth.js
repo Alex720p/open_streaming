@@ -9,9 +9,47 @@ const { user_model } = require('./models/models.js')
 
 let auth_router = express.Router()
 
-
 auth_router.post('/login', async (req, res) => {
-    //check jwt
+    if (req.cookies.token) {
+        try {
+            const token_data = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
+            const user = user_model.findById(token_data.id)
+
+            if (!user)
+                return res.status(400).json({error: 'invalid token'})
+            
+            return res.status(200).json({message: 'login successful'})  
+               
+        } catch(err) {
+            res.cookie('token', 'none', {
+                expires: new Date(Date.now()), //clearing the token by making it expiring 
+                httpOnly: true
+            })
+            return res.status(400).send({error: err.message})
+        }
+    }
+
+    const user = await user_model.findOne({username: req.body.username})
+    if (!user)
+        return res.status(400).json({error: 'invalid username and/or password'})
+
+    try { 
+        if (!await argon2.verify(user.password, req.body.password))
+            return res.status(400).json({error: 'invalid username and/or password'})
+    } catch(err) {
+        console.log(err)
+        return res.status(400).json({error: err})
+    }
+    
+    const token = jwt.sign({
+        id: user._id
+    }, process.env.JWT_SECRET, {expiresIn: '7d'})
+    
+    res.cookie('token', token, {
+        httpOnly: true
+    })
+
+    return res.status(200).json({message: 'login successful'})  
 })
 
 auth_router.post('/register', async (req, res) => {
@@ -28,11 +66,11 @@ auth_router.post('/register', async (req, res) => {
             mail: req.body.mail,
             username: req.body.username,
             password: password_hash
-        })
+        }) 
 
         await new_user.save()
     }
-    catch(err) {
+    catch(err) { //todo make unique error messages
         console.log(err)
         return res.status(400).json(err)
     }
@@ -41,3 +79,11 @@ auth_router.post('/register', async (req, res) => {
 })
 
 module.exports = auth_router
+
+/*
+{
+    "username": "alex",
+    "password": "alex12366666",
+    "mail": "super_mail@gmail.com"
+}
+*/
