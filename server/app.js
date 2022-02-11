@@ -28,5 +28,3 @@ app.get('/', async (req, res) => {
 
   //create stream object
   //add calls to livepeer api 
-
-  //mongodb+srv://admin:oCctknqJfTgWG0PR@cluster0.owtwn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
