@@ -12,7 +12,7 @@ app.use(helmet())
 app.use(cookie_parser())
 app.use(express.json())
 
-mongoose.connect('mongodb+srv://admin:oCctknqJfTgWG0PR@cluster0.owtwn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+mongoose.connect(`mongodb+srv://admin:${process.env.MONGODB_PASSWORD}@cluster0.owtwn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`)
 
 
 app.use('/auth', auth_router)
