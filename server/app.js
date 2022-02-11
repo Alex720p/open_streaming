@@ -1,13 +1,30 @@
 require('dotenv').config()
 const express = require('express')
+const helmet = require('helmet')
+const mongoose = require('mongoose')
+
+const auth_router = require('./routers/auth.js')
 
 const app = express()
-const port = 3000 //change port to dev file later on
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
+app.use(helmet())
+app.use(express.json())
+
+mongoose.connect('mongodb+srv://admin:oCctknqJfTgWG0PR@cluster0.owtwn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+
+
+app.use('/auth', auth_router)
   
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+app.get('/', async (req, res) => {
+  res.send('Hello World!')
+})
+
+
+  app.listen(process.env.PORT, () => {
+    console.log(`Example app listening on port ${process.env.PORT}`)
   })
+
+  //create stream object
+  //add calls to livepeer api 
+
+  //mongodb+srv://admin:oCctknqJfTgWG0PR@cluster0.owtwn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
