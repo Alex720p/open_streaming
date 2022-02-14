@@ -78,11 +78,3 @@ auth_router.post('/register', async (req, res) => {
 })
 
 module.exports = auth_router
-
-/*
-{
-    "username": "alex",
-    "password": "alex12366666",
-    "mail": "super_mail@gmail.com"
-}
-*/

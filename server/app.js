@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const cookie_parser = require('cookie-parser')
 
 const auth_router = require('./routers/auth.js')
+const livepeer_router = require('./routers/livepeer.js')
 
 const app = express()
 
@@ -16,6 +17,7 @@ mongoose.connect(`mongodb+srv://admin:${process.env.MONGODB_PASSWORD}@cluster0.o
 
 
 app.use('/auth', auth_router)
+app.use('/stream', livepeer_router)
   
 app.get('/', async (req, res) => {
   res.send('Hello World!')
