@@ -16,10 +16,9 @@ const req_config = {
     }
 } //config for requests on the livepeer api
 
-livepeer_router.post('/', async (req, res) => { //create a stream object for the user
+livepeer_router.post('/', async (req, res) => { //create a stream object for the specified user ///TODO ADD JWT MIDDLEWARE
     if (!req.body.user_id)
         return res.status(400).json({error: `no user id is specified`})
-
 
     try {
         let user = await user_model.findById(req.body.user_id)
@@ -70,20 +69,33 @@ livepeer_router.post('/', async (req, res) => { //create a stream object for the
 
     } catch(err) {
         console.log(err)
-        return res.status(400).json({error: 'something went wrong, try again'})
+        return res.status(400).json({error: err.response.statusText ? err.response.statusText : 'something went wrong'})
     }
 
 
     return res.status(200).json({message: 'stream created'})
 })
 
-livepeer_router.get('/active_streams', async (req, res) => { //returns all the ids of active streams
+livepeer_router.get('/stream', async (req, res) => { //get info of a stream with it's id
+    if (!req.body.stream_id)
+        return res.status(400).json({error: 'no stream id specified'})
     try {
-        let livepeer_res = await axios.get('?streamsonly=1&filters=[{"id": "isActive", "value": true}]', req_config)
-        return res.status(200).json(livepeer_res.data.map(({id}) => (id))) //from https://stackoverflow.com/questions/56031092/filtering-json-file-so-it-only-has-certain-key-value-pairs
+        let livepeer_res = await axios.get(`/${req.body.stream_id}`, req_config)
+        console.log(livepeer_res.data)
+        return res.status(200).json((({createdAt, playbackId, isActive, lastSeen}) => ({createdAt, playbackId, isActive, lastSeen}))(livepeer_res.data)) //https://stackoverflow.com/questions/17781472/how-to-get-a-subset-of-a-javascript-objects-properties
     } catch(err) {
         console.log(err)
-        return res.status(400).json({error: 'something went wrong'})
+        return res.status(400).json({error: err.response.statusText ? err.response.statusText : 'something went wrong'})
+    }
+})
+
+livepeer_router.get('/active_streams', async (req, res) => { //returns all the ids of active streams
+    try {
+        let livepeer_res = await axios.get('/?streamsonly=1&filters=[{"id": "isActive", "value": true}]', req_config)
+        return res.status(200).json(livepeer_res.data.map(({id, playbackId, region}) => ({id, playbackId, region}))) // id being livepeer_id in the models.js, https://stackoverflow.com/questions/56031092/filtering-json-file-so-it-only-has-certain-key-value-pairs
+    } catch(err) {
+        console.log(err)
+        return res.status(400).json({error: err.response.statusText ? err.response.statusText : 'something went wrong'})
     }
 })
 
