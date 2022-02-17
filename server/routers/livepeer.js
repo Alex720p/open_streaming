@@ -14,21 +14,21 @@ const req_config = {
     headers: {
         'Authorization': `Bearer ${process.env.LIVEPEER_API_KEY}`
     }
-}
+} //config for requests on the livepeer api
 
 livepeer_router.post('/', async (req, res) => { //create a stream object for the user
     if (!req.body.user_id)
         return res.status(400).json({error: `no user id is specified`})
 
 
-    try { //add check user doesn't already have a stream
-        const user = await user_model.findById(req.body.user_id)
+    try {
+        let user = await user_model.findById(req.body.user_id)
         if (user.stream != null)
             return res.status(400).json({error: `a stream object already exists for this user`})
 
         const livepeer_res = await axios.post('/', 
         { //default config from the livepeer api doc
-            "name": `${user.username}'s stream`,
+            "name": user.username,
             "profiles": [
                 {
                 "name": "720p",
@@ -60,7 +60,7 @@ livepeer_router.post('/', async (req, res) => { //create a stream object for the
             livepeer_id: stream_data.id,
             key: stream_data.streamKey,
             playback_id: stream_data.playbackId,
-            stream_name: stream_data.name
+            name: stream_data.name
         })
 
         await new_stream.save()
@@ -70,12 +70,23 @@ livepeer_router.post('/', async (req, res) => { //create a stream object for the
 
     } catch(err) {
         console.log(err)
-        return res.status(400).json({error: 'Something went wrong, try again'})
+        return res.status(400).json({error: 'something went wrong, try again'})
     }
 
 
-    return res.status(200).json({message: 'Stream created'})
+    return res.status(200).json({message: 'stream created'})
+})
+
+livepeer_router.get('/active_streams', async (req, res) => { //returns all the ids of active streams
+    try {
+        let livepeer_res = await axios.get('?streamsonly=1&filters=[{"id": "isActive", "value": true}]', req_config)
+        return res.status(200).json(livepeer_res.data.map(({id}) => (id))) //from https://stackoverflow.com/questions/56031092/filtering-json-file-so-it-only-has-certain-key-value-pairs
+    } catch(err) {
+        console.log(err)
+        return res.status(400).json({error: 'something went wrong'})
+    }
 })
 
 
-module.exports = livepeer_router;
+
+module.exports = livepeer_router

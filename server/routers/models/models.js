@@ -16,7 +16,7 @@ const stream_schema = new mongoose.Schema({
     livepeer_id: {type: String, required: true}, 
     key: {type: String, required: true},
     playback_id: {type: String, required: true},
-    stream_name: {type: String, required: true}
+    name: {type: String, required: true}
 })
 
 const user_model = mongoose.model('user', user_schema)
