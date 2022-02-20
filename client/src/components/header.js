@@ -6,7 +6,7 @@ const Header = ( ) => {
     return (
         <AppBar>
             <Toolbar>
-                    <Typography sx={{flexGrow: 1}}>Streaming</Typography>
+                    <Typography sx={{flexGrow: 1}}>open_streaming</Typography>
                     <IconButton onClick={() => console.log('handle menu')} sx={{float: 'right'}}>
                         <Avatar alt="user avatar" src=""/>
                     </IconButton>

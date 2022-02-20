@@ -2,6 +2,8 @@ import Grid from '@mui/material/Grid'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Header from './components/header.js'
 import Main from './components/main.js'
+import SignIn from './components/login.js'
+import SignUp from './components/register.js';
 
 const theme = createTheme({
   palette: {
@@ -13,6 +15,12 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
+      <SignUp />
+    </ThemeProvider>
+  );
+}
+
+/*
       <Grid container>
         <Grid item xs={12}>
           <Header />
@@ -21,8 +29,6 @@ function App() {
           <Main />
         </Grid>
       </Grid>
-    </ThemeProvider>
-  );
-}
+*/
 
 export default App;

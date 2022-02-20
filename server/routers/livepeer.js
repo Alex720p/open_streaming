@@ -3,6 +3,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const axios = require('axios')
+const jwt = require('jsonwebtoken')
 
 const {user_model, stream_model} = require('./models/models.js')
 
@@ -16,12 +17,22 @@ const req_config = {
     }
 } //config for requests on the livepeer api
 
-livepeer_router.post('/', async (req, res) => { //create a stream object for the specified user ///TODO ADD JWT MIDDLEWARE
-    if (!req.body.user_id)
-        return res.status(400).json({error: `no user id is specified`})
+livepeer_router.post('/', async (req, res) => { //create a stream object for the specified user
+    let token_data = null    
+    if (req.cookies.token) { //could do a middleware but we're only using this here atm, might be worthwile to implement one later
+        try {
+            token_data = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
+        } catch(err) {
+            console.log(err)
+            return res.status(400).json({error: 'invalid token'})
+        }
+
+    } else {
+        return res.status(400).json({error: 'you have to be logged in to create a stream'})
+    }
 
     try {
-        let user = await user_model.findById(req.body.user_id)
+        let user = await user_model.findById(token_data.id)
         if (user.stream != null)
             return res.status(400).json({error: `a stream object already exists for this user`})
 

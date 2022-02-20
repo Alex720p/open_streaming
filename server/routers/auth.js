@@ -51,12 +51,12 @@ auth_router.post('/login', async (req, res) => {
     return res.status(200).json({message: 'login successful'})  
 })
 
-auth_router.post('/register', async (req, res) => {
-    if (!req.body.password || !req.body.username || !req.body.mail)
-        return res.status(400).json({error: 'password and/or username and/or email is/are missing'})
+auth_router.post('/register', async (req, res) => { //add checks for mail + add custom error for duplicate names etc...
+    if (!req.body.password || !req.body.username)
+        return res.status(400).json({error: 'password and/or username is/are missing'})
 
-    if (req.body.password.length <= 8 || req.body.password.length >= 25)
-        return res.status(400).json({error: 'password length has to be between 8 and 25'})
+    if (req.body.password.length < 8)
+        return res.status(400).json({error: 'the length of your password has to be at least 8 characters'})
     
     try {
         let password_hash = await argon2.hash(req.body.password) //default config should be good enough

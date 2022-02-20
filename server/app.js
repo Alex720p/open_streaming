@@ -31,4 +31,3 @@ app.get('/', async (req, res) => {
   })
 
   //TODO Error handler
-  //add jwt middleware
