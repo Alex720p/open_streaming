@@ -14,14 +14,9 @@ import Container from '@mui/material/Container'
 
 import axios from 'axios'
 import { useState } from 'react'
+import Info from '../sub_components/info.js'
 
-const Info = (props) => {
-    return (
-        <Typography variant="body2" sx={{color: props.type == 'success' ? 'green' : 'red'}}>{props.type}: {props.text}</Typography>
-    )
-}
-
-const SignUp = () => {
+const Register = () => {
 
 
 
@@ -71,7 +66,7 @@ const SignUp = () => {
             <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-            Sign up
+            Register
             </Typography>
             <Box component="form" noValidate onSubmit={(e) => handleSubmit(e)} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
@@ -93,7 +88,6 @@ const SignUp = () => {
                     id="email"
                     label="Email"
                     name="email"
-                    autoComplete="email"
                     error={form_errors.email}
                 />
                 </Grid>
@@ -105,7 +99,6 @@ const SignUp = () => {
                     label="Password"
                     type="password"
                     id="password"
-                    autoComplete="new-password"
                     error={form_errors.password}
                 />
                 </Grid>
@@ -117,19 +110,18 @@ const SignUp = () => {
                     label="Confirm Password"
                     type="password"
                     id="confirm_password"
-                    autoComplete="new-password"
                     error={form_errors.password}
                 />
                 </Grid>
                 {info ? 
                     <Grid item xs={12}>
-                        <Info type={info.type} text={info.message} color={info.type == 'success' ? 'green' : 'red'} />
+                        <Info type={info.type} text={info.message}/>
                     </Grid>
                     :
                     null
                 }
                 <Grid item xs={12}>
-                <Typography variant="body2">By creating an account you acknowledge that you have a read and agree to the <Link href="#">Terms of Service</Link></Typography>
+                <Typography variant="body2">By creating an account you acknowledge that you have read and agree to the <Link href="#">Terms of Service</Link></Typography>
                 </Grid>
             </Grid>
             <Button
@@ -138,7 +130,7 @@ const SignUp = () => {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
             >
-                Sign Up
+                Register
             </Button>
             <Grid container justifyContent="flex-end">
                 <Grid item>
@@ -153,4 +145,4 @@ const SignUp = () => {
     )
 }
 
-export default SignUp
+export default Register

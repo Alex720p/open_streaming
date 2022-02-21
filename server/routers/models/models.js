@@ -9,7 +9,8 @@ const user_schema = new mongoose.Schema({
     stream: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'stream'
-    }
+    },
+    last_modif: { type: Date, default: Date.now, required: true }, //will be used to invalidate a jwt token if the user changes his password or email
 })
 
 const stream_schema = new mongoose.Schema({

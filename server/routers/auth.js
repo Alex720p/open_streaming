@@ -15,16 +15,15 @@ auth_router.post('/login', async (req, res) => {
             const token_data = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
             const user = user_model.findById(token_data.id)
 
-            if (!user) {
-                res.clearCookie("token") //cookie is useless, clear it
+            if (!user || token_data.last_modif != user.last_modif) {
+                res.clearCookie('token') //cookie is useless, clear it
                 return res.status(400).json({error: 'invalid token'})
             }
-            
             return res.status(200).json({message: 'login successful'})  
                
         } catch(err) {
-            res.clearCookie("token") //cookie is not valid, clear it
-            return res.status(400).send({error: err.message})
+            res.clearCookie('token') //cookie is not valid, clear it
+            return res.status(400).send({error: 'session expired'})
         }
     }
 
@@ -41,7 +40,8 @@ auth_router.post('/login', async (req, res) => {
     }
     
     const token = jwt.sign({
-        id: user._id
+        id: user._id,
+        last_modif: user.last_modif
     }, process.env.JWT_SECRET, {expiresIn: '7d'})
     
     res.cookie('token', token, {
